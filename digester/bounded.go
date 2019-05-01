@@ -29,6 +29,7 @@ func bounded(loc string) {
 	for _, path := range paths {
 		fmt.Printf("%x  %s\n", m[path], path)
 	}
+
 }
 
 func boundedDigester(loc string) (map[string][sha256.Size]byte, error) {
