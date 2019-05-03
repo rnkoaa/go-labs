@@ -1,0 +1,41 @@
+---
+supplychain:
+  hash: 12345678f
+  dist-receipts-article-watcher-prod:
+    hash: 12345678892423fabse-dfsd
+    resources:
+      - name: 'prod/application.yml'
+        hash: 12345678892423ad
+      - name: 'prod/secret.yml'
+        hash: 12345678892423asdf
+      - name: 'prod/inventory-processing-prd.jks'
+        hash: 12345678892423fd
+  dist-receipts-article-watcher-stage:
+    hash: 12345678892423agdb
+    resources:
+      - name: 'prod/application.yml'
+        hash: 12345678892423fbad
+      - name: 'prod/secret.yml'
+        hash: 12345678892423fabd
+      - name: 'prod/inventory-processing-prd.jks'
+        hash: 12345678892423fsds
+purchaseorders:
+  hash: 12345678fabdef
+  dist-receipts-article-watcher-prod:
+    hash: 12345678892423fabdef
+    resources:
+      - name: 'prod/application.yml'
+        hash: 12345678892423fabdef
+      - name: 'prod/secret.yml'
+        hash: 12345678892423fabdef
+      - name: 'prod/inventory-processing-prd.jks'
+        hash: 12345678892423fabdef
+  dist-receipts-article-watcher-stage:
+    hash: 12345678892423fadbdef
+    resources:
+      - name: 'prod/application.yml'
+        hash: 12345678892423defabdc
+      - name: 'prod/secret.yml'
+        hash: 12345678892423defabced
+      - name: 'prod/inventory-processing-prd.jks'
+        hash: 12345678892423afbd
