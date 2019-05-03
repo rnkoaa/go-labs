@@ -1,0 +1,19 @@
+vault 1.1
+// vault operator init
+// vault operator unseal
+// vault login
+
+export VAULT_ADDR=http://localhost:8200
+vault login
+myroot
+
+vault kv put secret/prod user=richard
+vault kv get secret/prod/user
+vault kv get -format=json secret/prod
+
+
+vault 0.7.3
+// f1d8c4ab-2a04-03e0-8530-5afe0ab13f4f
+export VAULT_TOKEN=2ca82ba1-840d-908f-e089-1cd539cb9ace
+vault write secret/prod user=richard
+ vault read secret/prod

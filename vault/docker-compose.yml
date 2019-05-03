@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  consul:
+    image: consul:1.4.3
+    container_name: consul
+    command: agent -server -bind 0.0.0.0 -client 0.0.0.0 -bootstrap-expect=1
+    ports: 
+      - 8500:8500
+      - 8600:8600
+      - 8300:8300
+      - 8301:8301
+    volumes:
+      - ./consul/config:/consul/config
+      - ./consul/data:/consul/data
+    networks:
+      - hashi-network
+  vault:
+    image: vault:0.7.3
+    container_name: vault
+    # image: vault:1.1.0
+    cap_add:
+      - IPC_LOCK
+    environment: 
+      - VAULT_ADDR=http://127.0.0.1:8200
+    ports:
+      - 8200:8200
+    networks:
+      - hashi-network
+    volumes: 
+      - ./vault/config:/vault/config
+      - ./vault/data:/vault/data
+      - ./vault/logs:/vault/logs
+    command: server
+    depends_on:
+      - consul
+
+networks:
+  hashi-network:
