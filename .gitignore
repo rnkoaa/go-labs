@@ -16,4 +16,5 @@
 .idea/
 # digester
 
+secret*.yml
 vault/consul/data/
