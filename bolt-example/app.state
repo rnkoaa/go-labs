@@ -1,0 +1,22 @@
+{
+    "supplychain": [
+        {
+            "dist-receipts-k2k-raw-dev": {
+               "cluster-state": "1234567898dsd",
+               "cost-accounting/dist-receipts-k2k-raw/dev/config.yml": "abcdefghijklmnopef",
+               "cost-accounting/dist-receipts-k2k-raw/dev/secret.yml": "abcdefghijklmnopef",
+               "cost-accounting/dist-receipts-k2k-raw/dev/inventory_processing_prd.jks": "abcdefghijklmnopef",
+               "cost-accounting/dist-receipts-k2k-raw/dev/stores_map": "abcdefghijklmnopef"
+            },
+            "dist-receipts-k2k-raw-prod": {
+                
+            },
+            "dist-receipts-k2k-article-watcher-dev": {
+                
+            },
+            "dist-receipts-k2k-article-prod": {
+                
+            }
+        }
+    ]
+}
