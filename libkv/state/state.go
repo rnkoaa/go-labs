@@ -109,17 +109,21 @@ func Close() {
 	kv.Close()
 }
 
-/*
-// Department
-	// classes
+/**
+Repo
+	name
+	Id
+	fullName
+	description
+	url
+	topics []string
+	Owner
+Owner
+	login
+	Id
+	avatar_url
+	url
+	gravatar_url
 
-// Class
-	// Teacher
-	// Students
-	// CourseNumber
-	// MeetingTime
 
-// Student
-	// Name
-	// Age
 */
