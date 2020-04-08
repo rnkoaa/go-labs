@@ -15,6 +15,22 @@ type Person struct {
 	Age       int
 }
 
+type Decoder interface {
+	Decode(b []byte) error
+}
+
+type Encoder interface {
+	Encode() ([]byte, error)
+}
+
+func (p *Person) Encode() ([]byte, error) {
+	return nil, nil
+}
+
+func (p *Person) Decode(b []byte) error {
+	return nil
+}
+
 // ToString -
 func (p *Person) ToString() string {
 	return fmt.Sprintf("{Name: %s %s, Age: %d}", p.Firstname, p.Lastname, p.Age)
@@ -34,13 +50,11 @@ func (p *Person) checkSum() [32]byte {
 	e := gob.NewEncoder(&b)
 	if err := e.Encode(p); err != nil {
 		log.Fatalln("error encoding person.")
-
 	}
 
 	by := b.Bytes()
 	sha256 := sha256.Sum256(by)
 	return sha256
-
 }
 
 func main() {
@@ -48,6 +62,7 @@ func main() {
 
 	richard := NewPerson("John", "Smith", 36)
 	sha := richard.checkSum()
+	// richard.Encode()
 
 	fmt.Printf("1. Sha 256 :%x\n", sha)
 
