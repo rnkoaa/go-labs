@@ -30,6 +30,7 @@ type Client struct {
 	UserAgent string
 
 	Post PostService
+	User UserService
 }
 
 // NewClient creates a new client that can be used to interact with the jsonplaceholder api.
@@ -41,6 +42,7 @@ func NewClient(httpClient *http.Client) *Client {
 	baseURL, _ := url.Parse(defaultBaseURL)
 	c := &Client{client: httpClient, BaseURL: baseURL, UserAgent: userAgent}
 	c.Post = &PostServiceClient{client: c}
+	c.User = &UserServiceClient{client: c}
 	return c
 }
 

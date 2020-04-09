@@ -19,9 +19,9 @@ func main() {
 	defer cancel()
 	client := jsonplaceholder.NewClient(nil)
 	client.SetBaseURL(baseURL)
-	post, _, err := client.Post.Get(ctx, 2)
+	user, _, err := client.User.Get(ctx, 1)
 	if err != nil {
 		fmt.Printf("error requesting post: %v\n", err)
 	}
-	fmt.Println(post)
+	fmt.Println(jsonplaceholder.Stringify(user))
 }
