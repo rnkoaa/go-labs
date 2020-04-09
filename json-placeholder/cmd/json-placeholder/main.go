@@ -3,19 +3,25 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/rnkoaa/go-labs/json-placeholder/pkg/jsonplaceholder"
 )
 
+const (
+	baseURL        = "https://jsonplaceholder.typicode.com"
+	defaultTimeout = 30 * time.Second
+)
+
 func main() {
 	ctx := context.Background()
-	// ctx = context.WithTimeout(ctx, 5*time.Second)
-	// httpClient := http.DefaultClient
+	ctx, cancel := context.WithTimeout(ctx, defaultTimeout)
+	defer cancel()
 	client := jsonplaceholder.NewClient(nil)
-	// client.SetBaseURL(t)
-	post, _, err := client.Post.Get(ctx, 2)
+	client.SetBaseURL(baseURL)
+	user, _, err := client.User.Get(ctx, 1)
 	if err != nil {
 		fmt.Printf("error requesting post: %v\n", err)
 	}
-	fmt.Println(post)
+	fmt.Println(jsonplaceholder.Stringify(user))
 }

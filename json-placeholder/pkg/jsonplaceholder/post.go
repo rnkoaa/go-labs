@@ -4,14 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
 // PostService interface exposes all the available methods needed to interact with posts
 // on jsonplaceholder.com
 type PostService interface {
-	Get(ctx context.Context, id int) (Post, *Response, error)
+	Get(context.Context, int) (Post, *Response, error)
+	List(context.Context, int, int) ([]Post, *Response, error)
 }
 
 // PostServiceClient implements the PostService interface
@@ -21,7 +21,16 @@ type PostServiceClient struct {
 
 var _ PostService = &PostServiceClient{}
 
-// Post represents a Post response from json placeholder
+// Comment represents a Post response from json placeholder
+type Comment struct {
+	PostID string `json:"postId"`
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Body   string `json:"body"`
+	Email  string `json:"email"`
+}
+
+// Post represents the response of a post
 type Post struct {
 	Body   string `json:"body"`
 	ID     int    `json:"id"`
@@ -35,30 +44,24 @@ func deserialize(response []byte) (Post, error) {
 	return p, err
 }
 
+// List all posts in the api
+func (p *PostServiceClient) List(ctx context.Context, page, size int) ([]Post, *Response, error) {
+
+	return nil, nil, nil
+}
+
 // Get post from json placeholder given the id of the post
 func (p *PostServiceClient) Get(ctx context.Context, id int) (Post, *Response, error) {
-	// baseURL := "https://jsonplaceholder.typicode.com/posts"
-	url := fmt.Sprintf("%s/posts/%d", p.client.BaseURL, id)
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return Post{}, nil, err
-	}
-	req = req.WithContext(ctx)
-	res, err := p.client.client.Do(req)
+	path := fmt.Sprintf("/posts/%d", id)
+	req, err := p.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return Post{}, nil, err
 	}
 
-	if res.StatusCode >= 200 && res.StatusCode <= 299 {
-		b, err := ioutil.ReadAll(res.Body)
-		defer res.Body.Close()
-		if err != nil {
-			return Post{}, nil, err
-		}
-		post, err := deserialize(b)
-		return post, &Response{res}, err
+	var post Post
+	res, err := p.client.Do(ctx, req, &post)
+	if err != nil {
+		return Post{}, nil, err
 	}
-
-	return Post{}, &Response{res}, nil
-
+	return post, res, nil
 }
