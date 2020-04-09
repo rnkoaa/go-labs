@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -104,6 +105,65 @@ func (c *Client) NewRequest(ctx context.Context, method, urlStr string, body int
 	req.Header.Add("Accept", mediaType)
 	req.Header.Add("User-Agent", c.UserAgent)
 	return req, nil
+}
+
+// newResponse creates a new Response for the provided http.Response
+func newResponse(r *http.Response) *Response {
+	response := Response{Response: r}
+
+	return &response
+}
+
+// Do sends an API request and returns the API response. The API response is JSON decoded and stored in the value
+// pointed to by v, or returned as an error if an API error has occurred. If v implements the io.Writer interface,
+// the raw response will be written to v, without attempting to decode it.
+func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
+	resp, err := DoRequestWithClient(ctx, c.client, req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if rerr := resp.Body.Close(); err == nil {
+			err = rerr
+		}
+	}()
+
+	response := newResponse(resp)
+
+	err = CheckResponse(resp)
+	if err != nil {
+		return response, err
+	}
+
+	if v != nil {
+		if w, ok := v.(io.Writer); ok {
+			_, err = io.Copy(w, resp.Body)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			err = json.NewDecoder(resp.Body).Decode(v)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return response, err
+}
+
+// DoRequest submits an HTTP request.
+func DoRequest(ctx context.Context, req *http.Request) (*http.Response, error) {
+	return DoRequestWithClient(ctx, http.DefaultClient, req)
+}
+
+// DoRequestWithClient submits an HTTP request using the specified client.
+func DoRequestWithClient(
+	ctx context.Context,
+	client *http.Client, req *http.Request) (*http.Response, error) {
+	req = req.WithContext(ctx)
+	return client.Do(req)
 }
 
 func (r *ErrorResponse) Error() string {

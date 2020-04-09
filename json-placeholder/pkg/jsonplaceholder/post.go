@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -37,28 +36,16 @@ func deserialize(response []byte) (Post, error) {
 
 // Get post from json placeholder given the id of the post
 func (p *PostServiceClient) Get(ctx context.Context, id int) (Post, *Response, error) {
-	// baseURL := "https://jsonplaceholder.typicode.com/posts"
-	url := fmt.Sprintf("%s/posts/%d", p.client.BaseURL, id)
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return Post{}, nil, err
-	}
-	req = req.WithContext(ctx)
-	res, err := p.client.client.Do(req)
+	path := fmt.Sprintf("/posts/%d", id)
+	req, err := p.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return Post{}, nil, err
 	}
 
-	if res.StatusCode >= 200 && res.StatusCode <= 299 {
-		b, err := ioutil.ReadAll(res.Body)
-		defer res.Body.Close()
-		if err != nil {
-			return Post{}, nil, err
-		}
-		post, err := deserialize(b)
-		return post, &Response{res}, err
+	var post Post
+	res, err := p.client.Do(ctx, req, &post)
+	if err != nil {
+		return Post{}, nil, err
 	}
-
-	return Post{}, &Response{res}, nil
-
+	return post, res, nil
 }
