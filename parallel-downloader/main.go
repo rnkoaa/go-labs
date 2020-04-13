@@ -1,11 +1,17 @@
 // https://gist.github.com/fracasula/b579d52daf15426e58aa133d0340ccb0
+// https://blog.afoolishmanifesto.com/posts/golang-concurrency-patterns/
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 )
 
 var urls = []string{
@@ -19,29 +25,8 @@ var urls = []string{
 	"https://jsonplaceholder.typicode.com/posts/8",
 	"https://jsonplaceholder.typicode.com/posts/9",
 	"https://jsonplaceholder.typicode.com/posts/10",
-}
-
-func main() {
-	// var wg sync.WaitGroup
-	// defer wg.Wait()
-	// jsonResponses := downloadItems(wg)
-	// jsonResponses := make(chan string)
-	// wg.Add(len(urls))
-
-	for _, url := range urls {
-		res := processUrl(url)
-		if res.err != nil {
-			fmt.Printf("url [%s] error %v\n", url, res.err)
-		} else {
-			fmt.Printf("url: %s, response %s\n", url, res.res)
-		}
-	}
-
-	// go func() {
-	// 	for response := range jsonResponses {
-	// 		fmt.Println(response)
-	// 	}
-	// }()
+	"https://jsonplaceholder.typicode.com/posts/11",
+	"https://jsonplaceholder.typicode.com/posts/12",
 }
 
 type result struct {
@@ -49,32 +34,63 @@ type result struct {
 	res string
 }
 
-func processUrls(urls []string) {
-	numFinders := 4
-	// finders := make([]<-chan int, numFinders)
-	for i := 0; i < numFinders; i++ {
-		// finders[i] = primeFinder(done, randIntStream)
-	}
-}
-
-func processUrl(url string) result {
+func request(ctx context.Context, wg *sync.WaitGroup, url string, ch chan result) {
 	res, err := http.Get(url)
 	if err != nil {
-		return result{
+		ch <- result{
 			err: err,
 			res: "",
 		}
+		wg.Done()
 	}
-	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return result{
+		ch <- result{
 			err: errors.New("error reading response body"),
 			res: "",
 		}
+		wg.Done()
 	}
-	return result{
+	res.Body.Close()
+	ch <- result{
 		err: nil,
 		res: string(body),
 	}
+	wg.Done()
+}
+
+func makeRequests(ctx context.Context, wg *sync.WaitGroup, urls []string, ch chan result) {
+	wg.Add(len(urls))
+	for _, u := range urls {
+		request(ctx, wg, u, ch)
+	}
+	close(ch)
+}
+
+func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	var wg sync.WaitGroup
+
+	ch := make(chan result)
+
+	go makeRequests(ctx, &wg, urls, ch)
+
+	for res := range ch {
+		if res.err != nil {
+			fmt.Println(res.err)
+		} else {
+			fmt.Println(res.res)
+		}
+	}
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	// block until either an error or OS-level signals
+	// to shutdown gracefully
+	select {
+	case <-sigChan:
+		fmt.Printf("Shutdown signal received... closing server")
+		cancel()
+	}
+	wg.Wait()
 }
