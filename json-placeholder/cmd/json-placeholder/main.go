@@ -50,6 +50,24 @@ func runMultipleTimes(ctx context.Context, client *jsonplaceholder.Client, userI
 		count++
 		user, _, err := client.User.Get(ctx, 1)
 		if err != nil {
+			// check error type if it is a retryable error, do not break, let it retry
+			// SUCCESS,
+			// NOT_READY,
+			// THROTTLED,
+			/*if (Results.SUCCESS == result) {
+			      retry = false;
+			  } else if (Results.NOT_READY == result) {
+			      retry = true;
+			  } else if (Results.THROTTLED == result) {
+			      retry = true;
+			  } else if (Results.SERVER_ERROR == result) {
+			      retry = true;
+			  }
+			  else {
+			      // Some other error occurred, so stop calling the API.
+			      retry = false;
+			  }*/
+			// SERVER_ERROR
 			fmt.Printf("error requesting post: %v\n", err)
 			break
 		}
