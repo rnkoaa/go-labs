@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	// "github.com/go-co-op/gocron"
 )
 
+// CertManager - struct to manage certs
 type CertManager struct {
 	config *Config
 	// cronScheduler *cron.Cron

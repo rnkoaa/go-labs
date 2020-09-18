@@ -6,6 +6,11 @@ vars:
   GREETING: Hello, World!
 
 tasks:
+  serve:
+    deps: ["build"]
+    cmds:
+      - ./cert-manager serve --daemon
+    silent: true
   default:
     deps: ["build"]
     cmds:
