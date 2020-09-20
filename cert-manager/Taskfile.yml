@@ -6,6 +6,11 @@ vars:
   GREETING: Hello, World!
 
 tasks:
+  serve:
+    deps: ["build"]
+    cmds:
+      - ./cert-manager serve --config ./config.yaml --secret secret.yaml
+    silent: true
   default:
     deps: ["build"]
     cmds:
