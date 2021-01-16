@@ -18,6 +18,26 @@ type DeploymentRequest struct {
 	Version     string `json:"version" yaml:"version"`
 }
 
+func (d DeploymentRequest) Summary() string {
+	str := ""
+	if d.Application != "" {
+		str += "Application: " + d.Application
+	}
+	if d.Cluster != "" {
+		str += ", Cluster: " + d.Cluster
+	}
+	if d.Environment != "" {
+		str += ", Environment: " + d.Environment
+	}
+	if d.Version != "" {
+		str += ", Tag: " + d.Version
+	}
+	if d.Dry {
+		str += ", Dry Mode"
+	}
+	return str
+}
+
 type Config struct {
 	CI              string `yaml:"ci" mapstructure:"CI"`
 	Vela            string `yaml:"vela" mapstructure:"vela"`
@@ -42,7 +62,7 @@ func parseDeploymentVersion(req *DeploymentRequest, velaBuildRef string) {
 }
 
 func parseDeploymentDescription(req *DeploymentRequest, velaDescription string) {
-	descParts := strings.Split(velaDescription, ";")
+	descParts := strings.Split(velaDescription, ",")
 	if len(descParts) > 0 {
 		for _, p := range descParts {
 			dp := strings.Split(p, "=")
@@ -95,7 +115,7 @@ func (c Config) GetDeploymentInfo() DeploymentRequest {
 }
 
 var envsToBind = []string{
-	"application", "ci", "vela", "vela_deployment", "vela_build_target", "vela_description", "vela_build_ref",
+	"application", "ci", "vela", "vela_deployment", "vela_build_target", "vela_description", "vela_build_ref", "vela_build_event",
 }
 
 var config Config
@@ -118,20 +138,15 @@ func init() {
 }
 
 func main() {
-	config := Config{
-		Application:  "batchconsumer",
-		VelaBuildRef: "heads/branches/main",
-		// VelaBuildRef:    "heads/tags/641",
-		VelaBuildEvent:  "deployment",
-		VelaDescription: "cluster=batchconsumer-poison",
-		// VelaDescription: "dry=true;cluster=batchconsumer-poison",
-		Suffix: "poison",
-		// Environment:     "lab2",
-		VelaTarget: "dev",
-	}
+
+	c, _ := json.Marshal(config)
+	fmt.Println(string(c))
 
 	deploymentInfo := config.GetDeploymentInfo()
-	b, _ := json.MarshalIndent(deploymentInfo, "", "  ")
+	b, _ := json.Marshal(deploymentInfo)
 	fmt.Printf("%s\n", b)
+
+	fmt.Println("------------------------")
+	fmt.Printf("Summary: \n%s\n", deploymentInfo.Summary())
 	// fmt.Println(config)
 }

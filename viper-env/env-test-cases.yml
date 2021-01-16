@@ -1,0 +1,106 @@
+- description: dry mode for tag deploy in stage
+  config:
+    vela: "true"
+    application: "batchconsumer"
+    vela_description: "dry=true"
+    vela_build_ref: "heads/tags/641"
+    vela_build_event: "deployment"
+    vela_build_target: "stage"
+  expected_result:
+    application: "batchconsumer"
+    dry: true
+    environment: stage
+    version: "641"
+
+- description: dry mode for main branch deploy in stage
+  config:
+    vela: "true"
+    application: "batchconsumer"
+    vela_description: "dry=true"
+    vela_build_ref: "heads/branches/main"
+    vela_build_event: "deployment"
+    vela_build_target: "stage"
+  expected_result:
+    application: "batchconsumer"
+    dry: true
+    environment: stage
+
+- description: dry mode for cluster deploy with tag in stage
+  config:
+    vela: "true"
+    application: "batchconsumer"
+    vela_description: "dry=true,cluster=batchconsumer-stage"
+    vela_build_ref: "heads/tags/641"
+    vela_build_event: "deployment"
+    vela_build_target: "stage"
+  expected_result:
+    application: "batchconsumer"
+    cluster: "batchconsumer-stage"
+    dry: true
+    environment: stage
+    version: "641"
+
+- description: dry mode for cluster deploy with main branch in stage
+  config:
+    vela: "true"
+    application: "batchconsumer"
+    vela_description: "dry=true,cluster=batchconsumer-stage"
+    vela_build_ref: "heads/branches/main"
+    vela_build_event: "deployment"
+    vela_build_target: "stage"
+  expected_result:
+    application: "batchconsumer"
+    cluster: "batchconsumer-stage"
+    dry: true
+    environment: stage
+
+- description: cluster deploy for tags in stage
+  config:
+    vela: "true"
+    application: "batchconsumer"
+    vela_description: "cluster=batchconsumer-stage"
+    vela_build_ref: "heads/tags/641"
+    vela_build_event: "deployment"
+    vela_build_target: "stage"
+  expected_result:
+    application: "batchconsumer"
+    cluster: "batchconsumer-stage"
+    environment: stage
+    version: 641
+
+- description: cluster deploy for main branch in stage
+  config:
+    vela: "true"
+    application: "batchconsumer"
+    vela_description: "cluster=batchconsumer-stage"
+    vela_build_ref: "heads/branches/main"
+    vela_build_event: "deployment"
+    vela_build_target: "stage"
+  expected_result:
+    application: "batchconsumer"
+    cluster: "batchconsumer-stage"
+    environment: stage
+
+- description: application deploy for tags in stage
+  config:
+    vela: "true"
+    application: "batchconsumer"
+    vela_build_ref: "heads/tags/641"
+    vela_build_event: "deployment"
+    vela_build_target: "stage"
+  expected_result:
+    application: "batchconsumer"
+    environment: stage
+    version: 641
+
+- description: application deploy for main branch in stage
+  config:
+    vela: "true"
+    vela_build_ref: "heads/branches/main"
+    vela_build_event: "deployment"
+    vela_build_target: "stage"
+    application: "batchconsumer"
+  expected_result:
+    application: "batchconsumer"
+    environment: stage
+
