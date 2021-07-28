@@ -9,11 +9,19 @@ type Post struct {
 	Body    string `json:"body"`
 }
 
-type PostService interface {
+type PostServiceReader interface {
 	Get(context.Context, int) (Post, error)
 	List(context.Context) ([]Post, error)
+}
+
+type PostServiceWriter interface {
 	Create(context.Context, Post) (bool, error)
 	Update(context.Context, Post) (bool, error)
+}
+
+type PostService interface {
+	PostServiceWriter
+	PostServiceReader
 	Delete(context.Context, int) (bool, error)
 }
 
